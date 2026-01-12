@@ -10,7 +10,7 @@ $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $zipFileName = "dist-$timestamp.zip"
 
 if (Test-Path "dist") {
-    Compress-Archive -Path "dist\*" -DestinationPath $zipFileName -Force
+    Compress-Archive -Path "dist" -DestinationPath $zipFileName -Force
     Write-Host "Build complete! Created $zipFileName" -ForegroundColor Green
 } else {
     Write-Host "Error: dist folder not found" -ForegroundColor Red
