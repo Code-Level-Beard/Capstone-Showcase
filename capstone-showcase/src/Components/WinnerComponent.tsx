@@ -2,6 +2,18 @@
 import "../CSS/WinnerComponent.css";
 
 import { Link } from "react-router-dom";
+
+const displayDepartmentMap: Record<string, string> = {
+  "computer-science": "Computer Science",
+  "computer-systems-engineering": "Computer Systems Engineering",
+  "biomedical-engineering": "Biomedical Engineering",
+  "mechanical-engineering": "Mechanical Engineering",
+  "electrical-engineering": "Electrical Engineering",
+  "industrial-engineering": "Industrial Engineering",
+  "informatics": "Informatics",
+  "interdisciplinary": "Interdisciplinary",
+};
+
 type ShowcaseEntry = {
   course: string;
   id: number;
@@ -104,7 +116,7 @@ export function WinnerComponent({ winners }: { winners: ShowcaseEntry[] }) {
                     {winner.semester} {winner.year}
                   </span>
                   <span className="winner-component__winner-department">
-                    {winner.department || "Computer Science"}
+                    {displayDepartmentMap[winner.course] || winner.course || "General Engineering"}
                   </span>
                 </div>
                 <p className="winner-component__winner-description">

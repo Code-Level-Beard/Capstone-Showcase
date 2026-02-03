@@ -540,9 +540,10 @@ app.get("/api/winners", async (req, res) => {
   // Ensuring all below necessary columns exist locally first
   await ensureColumns("survey_entries", LOCAL_DBSCHEMA.survey_entries_Columns);
 
+  const { semester, year } = req.query; // Get filters from the URL query string
   // The below "SELECT" code needs to match the "survey_entries_Columns" constant above.
   // Any additions the below code makes needs to be reflected in the "survey_entries_Columns" constant above
-  const sql = `SELECT 
+  let sql = `SELECT 
   Major AS course,
   youtubeLink AS video,
   position AS position,
@@ -562,14 +563,34 @@ app.get("/api/winners", async (req, res) => {
     WHEN MONTH(submitDate) IN (9, 10, 11) THEN 'Fall'
   END AS semester
 FROM survey_entries
-WHERE position IS NOT NULL
-ORDER BY submitDate DESC, position ASC;`;
-  db.query(sql, (err, results) => {
+WHERE position IS NOT NULL`;
+//ORDER BY position ASC;`; // Sort winners pages by ascending position
+//ORDER BY submitDate DESC, position ASC;`; // this is the old local sort
+const params = [];
+// Adding filters to the SQL query if they are provided
+  if (semester && semester !== 'all') {
+    const semMap = { sp: 'Spring', su: 'Summer', fa: 'Fall', wi: 'Winter' }; // Mapping 'sp' to 'Spring', etc., to match CASE statement results
+    sql += ` AND CASE 
+      WHEN MONTH(submitDate) IN (12, 1, 2) THEN 'Winter'
+      WHEN MONTH(submitDate) IN (3, 4, 5) THEN 'Spring'
+      WHEN MONTH(submitDate) IN (6, 7, 8) THEN 'Summer'
+      WHEN MONTH(submitDate) IN (9, 10, 11) THEN 'Fall'
+    END = ?`;
+    params.push(semMap[semester] || semester);
+  }
+  if (year && year !== 'all') {
+    sql += ` AND YEAR(submitDate) = ?`;
+    params.push(year);
+  }
+  sql += ` ORDER BY position ASC;`; // ordering results by ascending position
+  db.query(sql, params, (err, results) => {
     if (err) {
       console.error("Error retrieving winners data:", err);
       return res.status(500).send("Server error");
     }
     console.log("Query results:", results);
+    console.log("Executed SQL:", sql);
+    console.log("With Params:", params);
     res.json(results);
   });
 });
