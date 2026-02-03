@@ -563,7 +563,8 @@ app.get("/api/winners", async (req, res) => {
   END AS semester
 FROM survey_entries
 WHERE position IS NOT NULL
-ORDER BY submitDate DESC, position ASC;`;
+ORDER BY position ASC;`; // Sort winners pages by ascending position
+//ORDER BY submitDate DESC, position ASC;`; // this is the old local sort
   db.query(sql, (err, results) => {
     if (err) {
       console.error("Error retrieving winners data:", err);

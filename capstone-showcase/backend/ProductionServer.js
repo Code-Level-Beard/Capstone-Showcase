@@ -928,7 +928,8 @@ app.get("/api/winners", (req, res) => {
     WHEN MONTH(submitDate) IN (9, 10, 11) THEN 'Fall'
   END AS semester
 FROM survey_entries
-WHERE position IS NOT NULL;`;
+WHERE position IS NOT NULL
+ORDER BY position ASC;`; // Sort winners pages by ascending position
   db.query(sql, (err, results) => {
     if (err) {
       console.error("Error retrieving winners data:", err);
